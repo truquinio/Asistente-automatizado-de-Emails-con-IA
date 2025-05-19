@@ -73,8 +73,9 @@ python src/real/processor.py --verbose
 python src/demo/processor_demo.py --simulate-delay
 
 
-
+ 
 ## 🏗️ Estructura del Proyecto
+<pre>
 Asistente-Automatizado-de-Emails-con-IA/
 ├── .env.example
 ├── requirements.txt
@@ -89,7 +90,7 @@ Asistente-Automatizado-de-Emails-con-IA/
     └── utils/              # Funciones auxiliares
         ├── email_parser.py
         └── response_generator.py
-
+</pre>
 
 
 ## 🤝 ¿Cómo contribuir?
