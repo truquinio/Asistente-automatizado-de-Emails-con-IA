@@ -1,0 +1,29 @@
+# Paquetes principales
+openai>=1.0.0
+python-dotenv>=1.0.0
+imapclient>=2.3.1
+
+# Procesamiento de emails
+email-validator>=2.0.0
+beautifulsoup4>=4.12.0
+html2text>=2020.1.16
+
+# Manejo de datos
+python-dateutil>=2.8.2
+pydantic>=2.0.0  # Para validación de modelos
+typing-extensions>=4.5.0  # Soporte para tipos
+
+# Logging y monitoreo
+loguru>=0.7.0  # Logging más amigable
+tqdm>=4.65.0  # Barras de progreso
+
+# Seguridad
+cryptography>=40.0.0  # Para manejo seguro de credenciales
+
+# Testing (opcional)
+pytest>=7.3.1
+pytest-mock>=3.10.0
+pytest-cov>=4.0.0
+
+# Desarrollo
+python-magic>=0.4.27  # Detección de tipos MIME
