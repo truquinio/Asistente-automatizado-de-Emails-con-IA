@@ -25,7 +25,6 @@ Sistema automatizado que clasifica y responde correos electrónicos utilizando i
 
 ## ⚙️ Configuración Rápida
 
-```bash
 # Clonar el repositorio
 git clone https://github.com/tuusuario/Asistente-Automatizado-de-Emails-con-IA.git
 cd Asistente-Automatizado-de-Emails-con-IA
