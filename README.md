@@ -1,8 +1,9 @@
 # 📧 Asistente Automatizado de Emails con IA
 
-![Banner del Proyecto](image.png)  
+![Banner del Proyecto](Image%20Bot%20IA.png)
+
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT-4-12990.svg)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-blueviolet)
 ![IMAP](https://img.shields.io/badge/Protocol-IMAP-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
