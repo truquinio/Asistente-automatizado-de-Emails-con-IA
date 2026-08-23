@@ -14,6 +14,14 @@ Sistema automatizado que clasifica y responde correos electrónicos utilizando i
 
 ---
 
+## 🖼️ Capturas del dashboard demo
+
+| Bandeja y clasificación | Sello de categoría + respuesta IA | Correos enviados |
+|:---:|:---:|:---:|
+| ![Bandeja de entrada](screenshots/01-bandeja.png) | ![Clasificación y respuesta generada](screenshots/02-clasificacion.png) | ![Pestaña de enviados](screenshots/03-enviados.png) |
+
+---
+
 ## 🚀 Características Principales
 
 - ✨ **Clasificación inteligente** de correos (consulta, soporte, ventas, spam)
@@ -81,6 +89,9 @@ python src/demo/processor_demo.py --simulate-delay
 <pre>
 Asistente-Automatizado-de-Emails-con-IA/
 ├── index.html          # Dashboard demo (servido por GitHub Pages)
+├── style.css           # Estilos del dashboard demo
+├── script.js           # Lógica e interactividad del dashboard demo
+├── screenshots/         # Capturas usadas en este README
 ├── .env.example
 ├── requirements.txt
 ├── config.py
