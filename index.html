@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asistente de Emails con IA — Sala de Clasificación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10162B;
+    --ink-2:#171F3A;
+    --paper:#F5F1E6;
+    --paper-2:#EDE7D6;
+    --charcoal:#1B1F2A;
+    --muted:#6B6F76;
+    --gold:#C9A227;
+    --gold-dim:#8A741F;
+    --soporte:#C1432E;
+    --ventas:#3C7A5E;
+    --consulta:#2C5B8A;
+    --spam:#6B6F76;
+    --otro:#7A5C8A;
+    --radius:3px;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    min-height:100vh;
+  }
+  a{color:inherit;}
+
+  /* ---------- Demo ribbon ---------- */
+  .demo-ribbon{
+    background:var(--gold);
+    color:var(--ink);
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.06em;
+    text-align:center;
+    padding:7px 12px;
+    font-weight:600;
+  }
+
+  /* ---------- Top manifest bar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    padding:22px clamp(16px,4vw,48px);
+    border-bottom:1px solid rgba(245,241,230,.12);
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .brand .mark{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:20px;
+    letter-spacing:-.01em;
+  }
+  .brand .mark span{color:var(--gold);}
+  .brand .sub{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:.05em;
+  }
+  .manifest{
+    display:flex;
+    gap:clamp(16px,3vw,36px);
+    font-family:var(--mono);
+    flex-wrap:wrap;
+  }
+  .manifest .stat{display:flex; flex-direction:column; gap:2px;}
+  .manifest .stat .n{font-size:20px; font-weight:600; color:var(--paper);}
+  .manifest .stat .l{font-size:10px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase;}
+  .manifest .stat .n.soporte{color:var(--soporte);}
+  .manifest .stat .n.ventas{color:var(--ventas);}
+  .manifest .stat .n.consulta{color:var(--consulta);}
+
+  /* ---------- Layout ---------- */
+  .app{
+    display:grid;
+    grid-template-columns:minmax(300px,380px) 1fr;
+    gap:1px;
+    background:rgba(245,241,230,.12);
+    min-height:70vh;
+  }
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr;}
+  }
+
+  .panel{background:var(--ink);}
+
+  /* ---------- Filters ---------- */
+  .filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:18px clamp(16px,3vw,28px) 6px;
+  }
+  .pill{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.03em;
+    border:1px solid rgba(245,241,230,.25);
+    background:transparent;
+    color:var(--paper);
+    padding:6px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .15s ease, border-color .15s ease, transform .1s ease;
+  }
+  .pill:hover{border-color:var(--gold);}
+  .pill:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  .pill.active{background:var(--gold); border-color:var(--gold); color:var(--ink); font-weight:600;}
+
+  /* ---------- Inbox list ---------- */
+  .inbox{
+    list-style:none;
+    margin:0;
+    padding:10px clamp(10px,2vw,18px) 24px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    max-height:64vh;
+    overflow-y:auto;
+  }
+  .row{
+    display:grid;
+    grid-template-columns:10px 1fr auto;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    border-radius:var(--radius);
+    border:1px solid transparent;
+    cursor:pointer;
+    background:rgba(245,241,230,.02);
+    transition:background .15s ease, border-color .15s ease, transform .1s ease;
+  }
+  .row:hover{background:rgba(245,241,230,.07); transform:translateX(2px);}
+  .row:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  .row.selected{background:rgba(201,162,39,.12); border-color:rgba(201,162,39,.45);}
+  .row .dot{width:9px; height:9px; border-radius:50%;}
+  .row .dot.soporte{background:var(--soporte);}
+  .row .dot.ventas{background:var(--ventas);}
+  .row .dot.consulta{background:var(--consulta);}
+  .row .dot.spam{background:var(--spam);}
+  .row .dot.otro{background:var(--otro);}
+  .row .meta{min-width:0;}
+  .row .from{font-size:11px; color:var(--muted); font-family:var(--mono);}
+  .row .subject{font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .row .status{
+    font-family:var(--mono);
+    font-size:10px;
+    padding:3px 8px;
+    border-radius:999px;
+    border:1px solid rgba(245,241,230,.2);
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .row .status.aprobado{color:var(--ventas); border-color:var(--ventas);}
+
+  /* ---------- Detail panel ---------- */
+  .detail{
+    padding:clamp(20px,3vw,36px);
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  .detail-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .detail-header h2{
+    font-family:var(--display);
+    font-size:clamp(20px,2.4vw,26px);
+    margin:0 0 6px;
+    max-width:36ch;
+  }
+  .detail-header .from-line{font-family:var(--mono); font-size:12px; color:var(--muted);}
+
+  /* stamp */
+  .stamp{
+    position:relative;
+    width:104px;
+    height:104px;
+    border-radius:50%;
+    border:3px dashed currentColor;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    transform:rotate(-8deg) scale(1);
+    animation:stampIn .28s cubic-bezier(.2,1.5,.4,1);
+    flex-shrink:0;
+  }
+  @keyframes stampIn{
+    0%{transform:rotate(-8deg) scale(1.6); opacity:0;}
+    60%{opacity:1;}
+    100%{transform:rotate(-8deg) scale(1); opacity:1;}
+  }
+  .stamp .cat{font-family:var(--display); font-weight:700; font-size:13px; letter-spacing:.04em; text-transform:uppercase;}
+  .stamp .conf{font-family:var(--mono); font-size:11px; margin-top:2px;}
+  .stamp.soporte{color:var(--soporte);}
+  .stamp.ventas{color:var(--ventas);}
+  .stamp.consulta{color:var(--consulta);}
+  .stamp.spam{color:var(--spam);}
+  .stamp.otro{color:var(--otro);}
+
+  .body-block, .response-block{
+    background:var(--paper);
+    color:var(--charcoal);
+    border-radius:var(--radius);
+    padding:18px 20px;
+  }
+  .body-block .label, .response-block .label{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    margin-bottom:8px;
+    display:block;
+  }
+  .body-block p{margin:0; line-height:1.55; font-size:14.5px;}
+  .response-block pre{
+    margin:0;
+    white-space:pre-wrap;
+    font-family:var(--body);
+    line-height:1.55;
+    font-size:14.5px;
+  }
+  .response-block.discarded{
+    background:transparent;
+    border:1px dashed rgba(245,241,230,.3);
+    color:var(--muted);
+  }
+  .response-block.discarded .label{color:var(--muted);}
+
+  .actions{display:flex; gap:10px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:13.5px;
+    padding:10px 18px;
+    border-radius:var(--radius);
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .1s ease, opacity .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  .btn.primary{background:var(--gold); color:var(--ink);}
+  .btn.ghost{background:transparent; color:var(--paper); border-color:rgba(245,241,230,.3);}
+  .btn:disabled{opacity:.45; cursor:default; transform:none;}
+
+  .empty{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+    min-height:40vh;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:13px;
+    text-align:center;
+    padding:24px;
+  }
+
+  .footnote{
+    padding:18px clamp(16px,4vw,48px) 30px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .footnote a{color:var(--gold);}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001s !important; transition-duration:.001s !important;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="demo-ribbon">MODO DEMO — datos y respuestas simulados. No hay conexión real a Gmail, Outlook ni OpenAI.</div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark">Asistente<span>IA</span> · Emails</div>
+      <div class="sub">SALA DE CLASIFICACIÓN</div>
+    </div>
+    <div class="manifest" id="manifest"></div>
+  </header>
+
+  <main class="app">
+    <section class="panel">
+      <div class="filters" id="filters"></div>
+      <ul class="inbox" id="inbox"></ul>
+    </section>
+
+    <section class="panel detail" id="detail">
+      <div class="empty">Seleccioná un correo de la bandeja para ver la clasificación y la respuesta generada.</div>
+    </section>
+  </main>
+
+  <div class="footnote">
+    <span>Basado en la lógica de <code>processor_demo.py</code> del repositorio.</span>
+    <a href="https://github.com/truquinio/Asistente-automatizado-de-Emails-con-IA" target="_blank" rel="noopener">Ver código fuente en GitHub →</a>
+  </div>
+
+<script>
+  const CATEGORY_LABEL = {
+    soporte:'Soporte', ventas:'Ventas', consulta:'Consulta', spam:'Spam', otro:'Otro'
+  };
+
+  const EMAILS = [
+    {
+      id:1, from:'cliente@empresa.com', subject:'Problema con mi pedido reciente',
+      date:'15 may, 10:30', category:'soporte', confidence:94,
+      body:'Hola, tengo un problema con el pedido #12345 que hice la semana pasada. El producto llegó dañado. ¿Cómo puedo solicitar un reemplazo?',
+      response:'Estimado cliente,\n\nHemos recibido su reporte sobre "Problema con mi pedido reciente". Nuestro equipo de soporte se contactará con usted en las próximas 24 horas.\n\nAtentamente,\nEl equipo de soporte'
+    },
+    {
+      id:2, from:'prospecto@otraempresa.com', subject:'Consulta sobre sus servicios',
+      date:'15 may, 11:45', category:'consulta', confidence:88,
+      body:'Buen día, estoy interesado en sus servicios empresariales. ¿Podrían enviarme información sobre sus planes y precios?',
+      response:'Gracias por su interés en nuestros servicios.\n\nHemos recibido su consulta sobre "Consulta sobre sus servicios". Adjunto encontrará información detallada sobre nuestros productos.\n\nQuedamos atentos a sus comentarios.\n\nCordialmente,\nEl equipo comercial'
+    },
+    {
+      id:3, from:'soporte@terceros.com', subject:'Colaboración entre empresas',
+      date:'16 may, 09:15', category:'ventas', confidence:81,
+      body:'Nos gustaría explorar oportunidades de colaboración. ¿Estarían disponibles para una reunión la próxima semana?',
+      response:'Estimado/a,\n\nAgradecemos su interés en colaborar con nosotros. Nos encantaría programar una reunión para discutir oportunidades. ¿Estaría disponible el próximo miércoles a las 2pm?\n\nSaludos cordiales,\nEl equipo de alianzas'
+    },
+    {
+      id:4, from:'facturacion@proveedorxyz.com', subject:'Factura #A-4471 vencida',
+      date:'16 may, 14:02', category:'soporte', confidence:90,
+      body:'Notamos que la factura #A-4471 sigue pendiente de pago. Por favor confirmen si hubo algún inconveniente con la transferencia.',
+      response:'Estimado cliente,\n\nHemos recibido su reporte sobre "Factura #A-4471 vencida". Nuestro equipo de soporte se contactará con usted en las próximas 24 horas.\n\nAtentamente,\nEl equipo de soporte'
+    },
+    {
+      id:5, from:'gana-dinero@promo-ofertas.biz', subject:'¡GANASTE un premio, reclamalo YA!',
+      date:'16 may, 15:40', category:'spam', confidence:99,
+      body:'Felicidades, has sido seleccionado para reclamar un premio exclusivo. Hacé clic en el enlace antes de que expire.',
+      response:null
+    },
+    {
+      id:6, from:'rrhh@empresa.com', subject:'Confirmación de entrevista',
+      date:'17 may, 08:55', category:'otro', confidence:73,
+      body:'Le escribimos para confirmar la entrevista programada para el jueves a las 10am en nuestras oficinas.',
+      response:'Hemos recibido su mensaje con asunto: "Confirmación de entrevista".\n\nNos pondremos en contacto con usted pronto.\n\nAtentamente,\nEl equipo de atención al cliente'
+    },
+    {
+      id:7, from:'partner@aliado-tech.com', subject:'Propuesta de integración API',
+      date:'17 may, 11:20', category:'ventas', confidence:85,
+      body:'Nos gustaría proponerles una integración entre nuestras plataformas. Adjunto documentación técnica preliminar.',
+      response:'Estimado/a,\n\nAgradecemos su interés en colaborar con nosotros. Nos encantaría programar una reunión para discutir oportunidades. ¿Estaría disponible el próximo miércoles a las 2pm?\n\nSaludos cordiales,\nEl equipo de alianzas'
+    }
+  ];
+
+  const state = { filter:'todos', selectedId:null, status:{} };
+
+  function counts(){
+    const c = {soporte:0, ventas:0, consulta:0, spam:0, otro:0};
+    EMAILS.forEach(e => c[e.category]++);
+    return c;
+  }
+
+  function renderManifest(){
+    const c = counts();
+    const el = document.getElementById('manifest');
+    el.innerHTML = `
+      <div class="stat"><span class="n">${EMAILS.length}</span><span class="l">Procesados</span></div>
+      <div class="stat"><span class="n soporte">${c.soporte}</span><span class="l">Soporte</span></div>
+      <div class="stat"><span class="n ventas">${c.ventas}</span><span class="l">Ventas</span></div>
+      <div class="stat"><span class="n consulta">${c.consulta}</span><span class="l">Consulta</span></div>
+    `;
+  }
+
+  function renderFilters(){
+    const cats = ['todos','soporte','ventas','consulta','spam','otro'];
+    const el = document.getElementById('filters');
+    el.innerHTML = cats.map(c =>
+      `<button class="pill ${state.filter===c?'active':''}" data-cat="${c}">${c==='todos'?'Todos':CATEGORY_LABEL[c]}</button>`
+    ).join('');
+    el.querySelectorAll('.pill').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ state.filter = btn.dataset.cat; renderFilters(); renderInbox(); });
+    });
+  }
+
+  function renderInbox(){
+    const list = EMAILS.filter(e => state.filter==='todos' || e.category===state.filter);
+    const el = document.getElementById('inbox');
+    if(list.length===0){
+      el.innerHTML = `<div class="empty">No hay correos en esta categoría.</div>`;
+      return;
+    }
+    el.innerHTML = list.map(e => `
+      <li class="row ${state.selectedId===e.id?'selected':''}" tabindex="0" data-id="${e.id}">
+        <span class="dot ${e.category}"></span>
+        <span class="meta">
+          <span class="from">${e.from} · ${e.date}</span><br>
+          <span class="subject">${e.subject}</span>
+        </span>
+        <span class="status ${state.status[e.id]==='aprobado'?'aprobado':''}">${state.status[e.id]==='aprobado' ? 'Aprobado' : (e.category==='spam' ? 'Descartado' : 'Pendiente')}</span>
+      </li>
+    `).join('');
+    el.querySelectorAll('.row').forEach(row=>{
+      const open = ()=>{ state.selectedId = Number(row.dataset.id); renderInbox(); renderDetail(); };
+      row.addEventListener('click', open);
+      row.addEventListener('keydown', ev=>{ if(ev.key==='Enter') open(); });
+    });
+  }
+
+  function renderDetail(){
+    const el = document.getElementById('detail');
+    const e = EMAILS.find(x => x.id===state.selectedId);
+    if(!e){
+      el.innerHTML = `<div class="empty">Seleccioná un correo de la bandeja para ver la clasificación y la respuesta generada.</div>`;
+      return;
+    }
+    const isSpam = e.category==='spam';
+    const approved = state.status[e.id]==='aprobado';
+    el.innerHTML = `
+      <div class="detail-header">
+        <div>
+          <h2>${e.subject}</h2>
+          <div class="from-line">De: ${e.from} · ${e.date}</div>
+        </div>
+        <div class="stamp ${e.category}">
+          <span class="cat">${CATEGORY_LABEL[e.category]}</span>
+          <span class="conf">${e.confidence}% conf.</span>
+        </div>
+      </div>
+
+      <div class="body-block">
+        <span class="label">Correo original</span>
+        <p>${e.body}</p>
+      </div>
+
+      ${isSpam
+        ? `<div class="response-block discarded"><span class="label">Respuesta automática</span>No se genera respuesta — los mensajes clasificados como spam se descartan automáticamente.</div>`
+        : `<div class="response-block"><span class="label">Respuesta generada por IA</span><pre>${e.response}</pre></div>`
+      }
+
+      <div class="actions">
+        ${isSpam
+          ? `<button class="btn ghost" disabled>Sin acciones para spam</button>`
+          : `<button class="btn primary" id="approveBtn" ${approved?'disabled':''}>${approved?'Aprobada ✓':'Aprobar y enviar'}</button>
+             <button class="btn ghost" id="editBtn">Editar respuesta</button>`
+        }
+      </div>
+    `;
+    const approveBtn = document.getElementById('approveBtn');
+    if(approveBtn){
+      approveBtn.addEventListener('click', ()=>{
+        state.status[e.id] = 'aprobado';
+        renderInbox();
+        renderDetail();
+      });
+    }
+    const editBtn = document.getElementById('editBtn');
+    if(editBtn){
+      editBtn.addEventListener('click', ()=>{
+        const pre = el.querySelector('.response-block pre');
+        pre.contentEditable = 'true';
+        pre.focus();
+        editBtn.textContent = 'Editando…';
+        editBtn.disabled = true;
+      });
+    }
+  }
+
+  renderManifest();
+  renderFilters();
+  renderInbox();
+</script>
+</body>
+</html>
