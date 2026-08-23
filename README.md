@@ -6,6 +6,9 @@
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-blueviolet)
 ![IMAP](https://img.shields.io/badge/Protocol-IMAP-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-C9A227)
+
+**🖥️ [Ver demo interactiva](https://truquinio.github.io/Asistente-automatizado-de-Emails-con-IA/)** — dashboard con datos simulados, sin necesidad de instalar nada.
 
 Sistema automatizado que clasifica y responde correos electrónicos utilizando inteligencia artificial. Ideal para gestionar consultas, soporte técnico o ventas. Este es un proyecto personal orientado a optimizar la administración de bandejas de entrada.
 
@@ -77,6 +80,7 @@ python src/demo/processor_demo.py --simulate-delay
 ## 🏗️ Estructura del Proyecto
 <pre>
 Asistente-Automatizado-de-Emails-con-IA/
+├── index.html          # Dashboard demo (servido por GitHub Pages)
 ├── .env.example
 ├── requirements.txt
 ├── config.py
@@ -106,4 +110,4 @@ Asistente-Automatizado-de-Emails-con-IA/
 - Sigue el estilo de código PEP8.
 
 ## 📜 Licencia
-Este proyecto está licenciado bajo la [Licencia MIT](LICENSE.md).
+Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
