@@ -1,7 +1,5 @@
 # 📧 Asistente Automatizado de Emails con IA
 
-![Banner del Proyecto](Image%20Bot%20IA.png)
-
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-blueviolet)
 ![IMAP](https://img.shields.io/badge/Protocol-IMAP-orange.svg)
@@ -91,7 +89,7 @@ Asistente-Automatizado-de-Emails-con-IA/
 ├── index.html          # Dashboard demo (servido por GitHub Pages)
 ├── style.css           # Estilos del dashboard demo
 ├── script.js           # Lógica e interactividad del dashboard demo
-├── screenshots/         # Capturas usadas en este README
+├── screenshots/        # Capturas usadas en este README
 ├── .env.example
 ├── requirements.txt
 ├── config.py
