@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
 [**🖥️ Abrir demo**](https://truquinio.github.io/Asistente-automatizado-de-Emails-con-IA/) ·
-[**📂 Ver código**](https://github.com/trauquinio/Asistente-automatizado-de-Emails-con-IA)
+[**📂 Ver código**](https://github.com/truquinio/Asistente-automatizado-de-Emails-con-IA)
 
 </div>
 
@@ -87,7 +87,7 @@ GitHub Pages demo
 ## ⚙️ Preparación del entorno
 
 ```bash
-git clone https://github.com/trauquinio/Asistente-automatizado-de-Emails-con-IA.git
+git clone https://github.com/truquinio/Asistente-automatizado-de-Emails-con-IA.git
 cd Asistente-automatizado-de-Emails-con-IA
 python -m venv venv
 ```
@@ -130,4 +130,4 @@ Por ese motivo este README **no presenta el procesador real como listo para prod
 
 ---
 
-**Federico Trucco / [@truquinio](https://github.com/trauquinio)**
+**Federico Trucco / [@truquinio](https://github.com/truquinio)**
