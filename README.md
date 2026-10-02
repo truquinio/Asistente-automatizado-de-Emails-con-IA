@@ -1,122 +1,133 @@
+<div align="center">
+
 # 📧 Asistente Automatizado de Emails con IA
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-blueviolet)
-![IMAP](https://img.shields.io/badge/Protocol-IMAP-orange.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Demo](https://img.shields.io/badge/Demo-GitHub%20Pages-C9A227)
+**Demo interactiva de clasificación y respuesta asistida, acompañada por un prototipo backend en Python/OpenAI/IMAP.**
 
-**🖥️ [Ver demo interactiva](https://truquinio.github.io/Asistente-automatizado-de-Emails-con-IA/)** — dashboard con datos simulados, sin necesidad de instalar nada.
+![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat&logo=python&logoColor=white)
+![OpenAI API](https://img.shields.io/badge/OpenAI-API-412991?style=flat&logo=openai&logoColor=white)
+![IMAP](https://img.shields.io/badge/Email-IMAP-EA4335?style=flat)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
-Sistema automatizado que clasifica y responde correos electrónicos utilizando inteligencia artificial. Ideal para gestionar consultas, soporte técnico o ventas. Este es un proyecto personal orientado a optimizar la administración de bandejas de entrada.
+[**🖥️ Abrir demo**](https://truquinio.github.io/Asistente-automatizado-de-Emails-con-IA/) ·
+[**📂 Ver código**](https://github.com/trauquinio/Asistente-automatizado-de-Emails-con-IA)
+
+</div>
 
 ---
 
-## 🖼️ Capturas del dashboard demo
+## Qué muestra el proyecto
 
-| Bandeja y clasificación | Sello de categoría + respuesta IA | Correos enviados |
-|:---:|:---:|:---:|
+El repositorio tiene dos partes diferenciadas:
+
+1. **Dashboard demo** en HTML/CSS/JavaScript, publicado mediante GitHub Pages y alimentado con datos simulados.
+2. **Prototipo Python** para recuperar correo no leído por IMAP, clasificar mensajes con la API de OpenAI y generar una respuesta propuesta.
+
+La separación es deliberada: la demo puede explorarse sin credenciales ni acceso a una cuenta de correo.
+
+## 📸 Capturas
+
+| Bandeja | Clasificación + respuesta | Vista de enviados |
+| --- | --- | --- |
 | ![Bandeja de entrada](screenshots/01-bandeja.png) | ![Clasificación y respuesta generada](screenshots/02-clasificacion.png) | ![Pestaña de enviados](screenshots/03-enviados.png) |
 
----
+## ✨ Capacidades verificables
 
-## 🚀 Características Principales
+- categorías de correo definidas para **soporte, ventas, consulta, spam y otros**;
+- conexión IMAP configurada para SSL;
+- recuperación de mensajes no leídos;
+- clasificación mediante Chat Completions;
+- generación de respuesta según categoría;
+- respuesta fallback cuando falla la generación;
+- límite de procesamiento configurable, acotado a un máximo de 50 en la configuración;
+- demo frontend independiente del correo real.
 
-- ✨ **Clasificación inteligente** de correos (consulta, soporte, ventas, spam)
-- 🤖 **Generación de respuestas** con GPT-3.5-turbo o GPT-4
-- 🔒 Conexión segura vía **IMAP con SSL** (compatible con Gmail, Outlook, Exchange)
-- 📊 **Dashboard de métricas en tiempo real**
-- 🧪 **Modo demo** incluido para pruebas sin conexión
-- ⚡ **Procesamiento rápido** (hasta 50 correos por ejecución)
-- 📁 **Soporte multi-carpeta** (INBOX, Important, etc.)
-- 🔄 **Reintentos automáticos** ante errores de conexión
+## 🧱 Arquitectura
 
----
+```text
+Cuenta de correo
+      │
+      ▼
+    IMAP
+      │
+      ▼
+EmailProcessor
+      │
+      ├── clasificación ──► OpenAI API
+      │
+      └── respuesta ──────► OpenAI API
+                               │
+                               ▼
+                     respuesta propuesta
 
-## ⚙️ Configuración Rápida
+GitHub Pages demo
+└── HTML + CSS + JavaScript + datos simulados
+```
 
-# Clonar el repositorio
-git clone https://github.com/tuusuario/Asistente-Automatizado-de-Emails-con-IA.git
-cd Asistente-Automatizado-de-Emails-con-IA
+## 🗂️ Estructura
 
-# Crear y activar entorno virtual
-python -m venv venv
-source venv/bin/activate      # En Linux/Mac
-.\venv\Scripts\activate       # En Windows
-
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Configurar variables de entorno
-cp .env.example .env
-# Edita el archivo .env con tus credenciales
-
-
-
-## 🔍 Diagrama de Flujo
-sequenceDiagram
-    participant Sistema
-    participant Gmail
-    participant OpenAI
-
-    Sistema->>Gmail: Conexión IMAP segura
-    Gmail-->>Sistema: Obtener correos no leídos
-    Sistema->>OpenAI: Clasificar correo
-    OpenAI-->>Sistema: Categoría (consulta, soporte, ventas)
-    Sistema->>OpenAI: Generar respuesta
-    OpenAI-->>Sistema: Texto de respuesta
-    Sistema->>Gmail: Marcar correo como leído
-
-
-## 🛠️ Uso avanzado
-# Procesar 5 correos
-python src/real/processor.py --limit 5
-
-# Procesar una carpeta específica
-python src/real/processor.py --folder "INBOX/Important"
-
-# Ejecutar en modo verbose (depuración)
-python src/real/processor.py --verbose
-
-# Ejecutar versión demo con retardo simulado
-python src/demo/processor_demo.py --simulate-delay
-
-
- 
-## 🏗️ Estructura del Proyecto
-<pre>
-Asistente-Automatizado-de-Emails-con-IA/
-├── index.html          # Dashboard demo (servido por GitHub Pages)
-├── style.css           # Estilos del dashboard demo
-├── script.js           # Lógica e interactividad del dashboard demo
-├── screenshots/        # Capturas usadas en este README
+```text
+.
+├── index.html
+├── style.css
+├── script.js
+├── screenshots/
 ├── .env.example
 ├── requirements.txt
 ├── config.py
 └── src/
-    ├── demo/               # Modo simulado para pruebas
-    │   ├── __init__.py
-    │   └── processor_demo.py
-    ├── real/               # Implementación funcional
-    │   ├── __init__.py
+    ├── demo/
+    ├── real/
     │   └── processor.py
-    └── utils/              # Funciones auxiliares
+    └── utils/
         ├── email_parser.py
         └── response_generator.py
-</pre>
+```
 
+## ⚙️ Preparación del entorno
 
-## 🤝 ¿Cómo contribuir?
-- Haz fork del proyecto.
-- Crea una rama: `git checkout -b feature/mi-mejora`
-- Realiza tus cambios y haz commit: `git commit -am 'Agrega nueva funcionalidad'`
-- Sube la rama: `git push origin feature/mi-mejora`
-- Abre un Pull Request.
+```bash
+git clone https://github.com/trauquinio/Asistente-automatizado-de-Emails-con-IA.git
+cd Asistente-automatizado-de-Emails-con-IA
+python -m venv venv
+```
 
-**Recomendaciones:**
-- Documenta nuevas funcionalidades.
-- Mantén cobertura de pruebas >90%.
-- Sigue el estilo de código PEP8.
+Linux/macOS:
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Windows PowerShell:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+Edita `.env` con credenciales propias y nunca lo subas al repositorio.
+
+## ⚠️ Estado del backend
+
+**Prototype / work in progress.**
+
+Durante la revisión documental se detectó que el backend actual no está completamente alineado con su módulo de configuración: `src/real/processor.py` importa `Config`, mientras que `config.py` expone `Settings` y una instancia `config`.
+
+Por ese motivo este README **no presenta el procesador real como listo para producción ni como flujo validado end-to-end**. La demo de GitHub Pages es independiente de ese desajuste.
+
+## 🔐 Seguridad
+
+- `.env.example` sirve como plantilla; no debe contener secretos reales.
+- El acceso IMAP requiere credenciales propias.
+- Las respuestas del modelo deben considerarse propuestas y revisarse antes de cualquier uso real.
 
 ## 📜 Licencia
-Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
+
+[MIT](LICENSE)
+
+---
+
+**Federico Trucco / [@truquinio](https://github.com/trauquinio)**
