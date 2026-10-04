@@ -129,9 +129,6 @@ Nunca subas credenciales reales al repositorio.
 
 [MIT](LICENSE)
 
----
-
-**Federico Trucco / [@truquinio](https://github.com/truquinio)**
 
 ---
 
