@@ -4,12 +4,12 @@
 
 ### Clasificación y redacción asistida de correo electrónico
 
-[![Demo](https://img.shields.io/badge/Abrir%20demo-GitHub%20Pages-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://truquinio.github.io/Asistente-automatizado-de-Emails-con-IA/)
-[![MIT](https://img.shields.io/badge/licencia-MIT-green?style=flat)](LICENSE)
+[![Demo](https://img.shields.io/badge/Abrir%20demo-GitHub%20Pages-2ea44f?style=flat-square)](https://truquinio.github.io/Asistente-automatizado-de-Emails-con-IA/)
+[![MIT](https://img.shields.io/badge/licencia-MIT-green?style=flat-square)](LICENSE)
 
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat&logo=python&logoColor=white)
-![OpenAI API](https://img.shields.io/badge/OpenAI-API-412991?style=flat&logo=openai&logoColor=white)
-![IMAP](https://img.shields.io/badge/Email-IMAP-EA4335?style=flat)
+![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square)
+![OpenAI API](https://img.shields.io/badge/OpenAI-API-412991?style=flat-square)
+![IMAP](https://img.shields.io/badge/Email-IMAP-EA4335?style=flat-square)
 
 </div>
 
@@ -132,3 +132,7 @@ Nunca subas credenciales reales al repositorio.
 ---
 
 **Federico Trucco / [@truquinio](https://github.com/truquinio)**
+
+---
+
+**by [truquinio](https://github.com/truquinio)** · [LinkedIn](https://www.linkedin.com/in/federico-trucco/)
