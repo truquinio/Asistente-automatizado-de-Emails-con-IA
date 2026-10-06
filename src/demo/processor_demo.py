@@ -4,7 +4,7 @@ from loguru import logger
 from random import choice
 from time import sleep
 
-from config import EmailCategory, Config
+from config import EmailCategory
 
 class DemoEmailProcessor:
     """Simulador completo del procesador de emails para entornos de prueba"""
