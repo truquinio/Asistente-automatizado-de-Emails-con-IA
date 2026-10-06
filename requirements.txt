@@ -10,7 +10,8 @@ html2text>=2020.1.16
 
 # Manejo de datos
 python-dateutil>=2.8.2
-pydantic>=2.0.0  # Para validación de modelos
+pydantic>=2.0
+pydantic-settings>=2.0
 typing-extensions>=4.5.0  # Soporte para tipos
 
 # Logging y monitoreo
