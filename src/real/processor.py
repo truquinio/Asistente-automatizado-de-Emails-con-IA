@@ -1,116 +1,111 @@
-import email
-from imapclient import IMAPClient
-from openai import OpenAI
-from loguru import logger
-from typing import List, Dict, Optional
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Dict, List, Optional
 
-from config import Config, EmailCategory
+from imapclient import IMAPClient
+from loguru import logger
+from openai import OpenAI
+
+from config import EmailCategory, config
 from src.utils.email_parser import parse_email
 from src.utils.response_generator import generate_response
 
+
 class EmailProcessor:
-    def __init__(self):
-        self.client = OpenAI(api_key=Config.OPENAI_API_KEY)
+    def __init__(self, client=None):
+        self.client = client or OpenAI(
+            api_key=config.OPENAI_API_KEY,
+            timeout=config.OPENAI_TIMEOUT,
+        )
         self.processed_count = 0
         self.categories = {cat.value: 0 for cat in EmailCategory}
-    
+
     def connect_to_email_server(self) -> IMAPClient:
-        """Establece conexión segura con el servidor IMAP"""
         try:
             server = IMAPClient(
-                host=Config.IMAP_SERVER,
-                port=Config.IMAP_PORT,
+                host=config.IMAP_SERVER,
+                port=config.IMAP_PORT,
                 ssl=True,
-                timeout=30
+                timeout=config.OPENAI_TIMEOUT,
             )
-            server.login(Config.EMAIL_ACCOUNT, Config.EMAIL_PASSWORD)
+            server.login(config.EMAIL_ACCOUNT, config.EMAIL_PASSWORD)
             return server
-        except Exception as e:
-            logger.error(f"Error de conexión IMAP: {str(e)}")
+        except Exception as exc:
+            logger.error(f"Error de conexión IMAP: {exc}")
             raise
 
-    def fetch_unread_emails(self, limit: int = Config.DEFAULT_LIMIT) -> List[Dict]:
-        """Obtiene emails no leídos del servidor"""
+    def fetch_unread_emails(self, limit: Optional[int] = None) -> List[Dict]:
+        limit = config.PROCESSING_LIMIT if limit is None else limit
+        folder = config.EMAIL_FOLDERS[0] if config.EMAIL_FOLDERS else "INBOX"
         emails = []
         try:
             with self.connect_to_email_server() as server:
-                server.select_folder(Config.DEFAULT_FOLDER)
+                server.select_folder(folder)
                 messages = server.search(["UNSEEN"])[:limit]
-                
-                for msg_id, data in server.fetch(messages, ["RFC822"]).items():
-                    raw_email = data[b"RFC822"]
-                    parsed_email = parse_email(raw_email)
-                    emails.append(parsed_email)
-                    
-        except Exception as e:
-            logger.error(f"Error al obtener emails: {str(e)}")
-        
+                if not messages:
+                    return emails
+                for _, data in server.fetch(messages, ["RFC822"]).items():
+                    emails.append(parse_email(data[b"RFC822"]))
+        except Exception as exc:
+            logger.error(f"Error al obtener emails: {exc}")
         return emails
 
     def process_single_email(self, email_data: Dict) -> Optional[Dict]:
-        """Procesa un email individual con OpenAI"""
         try:
-            # Clasificar el email
             classification_prompt = (
-                f"Clasifica este email en una de estas categorías: {[cat.value for cat in EmailCategory]}\n\n"
+                f"Clasifica este email en una de estas categorías: "
+                f"{[cat.value for cat in EmailCategory]}\n\n"
                 f"Asunto: {email_data['subject']}\n"
                 f"Contenido: {email_data['body'][:1000]}\n"
                 "Respuesta solo con la categoría:"
             )
-            
             response = self.client.chat.completions.create(
-                model=Config.OPENAI_MODEL,
+                model=config.OPENAI_MODEL,
                 messages=[{"role": "user", "content": classification_prompt}],
                 temperature=0.3,
-                max_tokens=10
+                max_tokens=10,
             )
-            
             category = response.choices[0].message.content.strip().lower()
             if category not in [cat.value for cat in EmailCategory]:
                 category = EmailCategory.OTHER.value
-            
             self.categories[category] += 1
-            
-            # Generar respuesta
+
             response_text = generate_response(
-                email_data['body'],
+                email_data["body"],
                 category,
                 self.client,
-                Config.OPENAI_MODEL
+                config.OPENAI_MODEL,
             )
-            
             return {
-                'id': email_data['id'],
-                'from': email_data['from'],
-                'subject': email_data['subject'],
-                'category': category,
-                'response': response_text,
-                'processed_at': datetime.now().isoformat()
+                "id": email_data["id"],
+                "from": email_data["from"],
+                "subject": email_data["subject"],
+                "category": category,
+                "response": response_text,
+                "processed_at": datetime.now().isoformat(),
             }
-            
-        except Exception as e:
-            logger.error(f"Error al procesar email: {str(e)}")
+        except Exception as exc:
+            logger.error(f"Error al procesar email: {exc}")
             return None
 
-def process_emails(limit: int = Config.DEFAULT_LIMIT) -> Dict:
-    """Función principal para procesar lotes de emails"""
+
+def process_emails(limit: Optional[int] = None) -> Dict:
     processor = EmailProcessor()
     emails = processor.fetch_unread_emails(limit)
     results = []
-    
+
     for email_data in emails:
         result = processor.process_single_email(email_data)
         if result:
             results.append(result)
             processor.processed_count += 1
-    
+
     return {
-        'total_processed': processor.processed_count,
-        'categories': processor.categories,
-        'emails': results,
-        'timestamp': datetime.now().isoformat()
+        "total_processed": processor.processed_count,
+        "categories": processor.categories,
+        "emails": results,
+        "timestamp": datetime.now().isoformat(),
     }
+
 
 if __name__ == "__main__":
     logger.info("Iniciando procesamiento de emails...")
