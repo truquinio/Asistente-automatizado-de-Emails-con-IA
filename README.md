@@ -56,12 +56,19 @@ sequenceDiagram
 - límite de procesamiento configurable;
 - frontend demo independiente del correo real.
 
-## ⚠️ Estado del backend
+## ✅ Estado del backend
 
-> [!WARNING]
-> **Prototipo / work in progress.** El backend actual tiene un desajuste entre src/real/processor.py y config.py: el procesador importa Config, mientras el módulo de configuración expone Settings y una instancia config.
+El contrato de configuración fue unificado sobre `Settings/config` y es compatible con **Pydantic 2 + pydantic-settings**.
 
-Por ello no se presenta como flujo productivo validado end-to-end. La demo de GitHub Pages es independiente de ese problema.
+El flujo real usa ahora de forma coherente:
+
+- `PROCESSING_LIMIT` para limitar lotes;
+- `EMAIL_FOLDERS` para seleccionar la carpeta IMAP;
+- `OPENAI_TIMEOUT`, modelo y parámetros desde la misma configuración;
+- pruebas de regresión para evitar que vuelva a romperse el contrato entre configuración y procesador.
+
+> [!NOTE]
+> La demo pública sigue funcionando con datos simulados. El backend real necesita credenciales propias de email/OpenAI y no se presenta como un servicio desplegado ni como envío automático sin supervisión.
 
 ## ▶️ Preparar el entorno
 
@@ -119,11 +126,21 @@ Nunca subas credenciales reales al repositorio.
 
 </details>
 
+## 🧪 Verificación
+
+```bash
+pytest -q tests/test_config_contract.py
+python -m compileall -q config.py src tests
+```
+
+Las pruebas cubren el contrato de configuración compartido y el uso de carpeta/límite IMAP configurables.
+
 ## 🔐 Seguridad
 
-- .env.example es sólo una plantilla;
+- `.env.example` es sólo una plantilla;
 - el acceso IMAP necesita credenciales propias;
-- las respuestas de IA deben revisarse antes de cualquier uso real.
+- las respuestas de IA deben revisarse antes de cualquier uso real;
+- el proyecto propone respuestas: no debe enviarlas automáticamente sin una capa explícita de aprobación.
 
 ## 📜 Licencia
 
